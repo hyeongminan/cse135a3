@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=utf-8" language="java" import="java.sql.*" import="java.util.*" errorPage="" %>
+<%@ page import="cse135.Util" %>
 <%
 String flag_str=null,need_to_connect_db=null;
 int flag=0, role_flag=-1;
@@ -15,10 +16,12 @@ if(("Y").equals(need_to_connect_db))
 		{
 		
 			try{Class.forName("org.postgresql.Driver");}catch(Exception e){System.out.println("Driver error");}
-			String url="jdbc:postgresql://127.0.0.1:5432/P1";
-			String user="postgres";
-			String password="880210";
-			conn =DriverManager.getConnection(url, user, password);
+		    conn=DriverManager.getConnection("jdbc:postgresql://" +
+	    	    	Util.SERVERNAME + ":" +
+	    	    	Util.PORTNUMBER + "/" +
+	    	    	Util.DATABASE,
+	    	    	Util.USERNAME,
+	    	    	Util.PASSWORD);
 			stmt =conn.createStatement();
 			ResultSet rs=null;
 			rs=stmt.executeQuery("SELECT * FROM  users where name='"+name+"';");

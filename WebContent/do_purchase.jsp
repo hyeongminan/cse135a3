@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=utf-8" language="java" import="java.sql.*" import="database.*"   import="java.util.*" errorPage="" %>
+<%@ page import="cse135.Util" %>
 <%@include file="welcome.jsp" %>
 <%
 if(session.getAttribute("name")!=null)
@@ -44,10 +45,12 @@ if(session.getAttribute("name")!=null)
 					String  SQL="delete from carts where uid="+userID+";";
 					
 					try{Class.forName("org.postgresql.Driver");}catch(Exception e){System.out.println("Driver error");}
-					String url="jdbc:postgresql://127.0.0.1:5432/P1";
-					String user="postgres";
-					String password="880210";
-					conn =DriverManager.getConnection(url, user, password);
+				    conn=DriverManager.getConnection("jdbc:postgresql://" +
+			    	    	Util.SERVERNAME + ":" +
+			    	    	Util.PORTNUMBER + "/" +
+			    	    	Util.DATABASE,
+			    	    	Util.USERNAME,
+			    	    	Util.PASSWORD);
 					stmt =conn.createStatement();
 				
 					try{

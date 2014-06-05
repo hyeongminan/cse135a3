@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=utf-8" language="java" import="java.sql.*" import="java.util.*" errorPage="" %>
+<%@ page import="cse135.Util" %>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -55,10 +56,12 @@ int show_num_row=20, show_num_col=10;
 try
 {
 	try{Class.forName("org.postgresql.Driver");}catch(Exception e){System.out.println("Driver error");}
-	String url="jdbc:postgresql://127.0.0.1:5432/P1";
-	String user="postgres";
-	String password="880210";
-	conn =DriverManager.getConnection(url, user, password);
+    conn=DriverManager.getConnection("jdbc:postgresql://" +
+	    	Util.SERVERNAME + ":" +
+	    	Util.PORTNUMBER + "/" +
+	    	Util.DATABASE,
+	    	Util.USERNAME,
+	    	Util.PASSWORD);
 	stmt =conn.createStatement();
 	stmt2 =conn.createStatement();
 	
