@@ -13,8 +13,8 @@ public class Util {
 	public static final String PORTNUMBER = "5432";
 	*/
 	public static final String SERVERNAME = "localhost";
-	public static final String USERNAME = "ehdee";
-	public static final String PASSWORD = "ehdee";
+	public static final String USERNAME = "postgres";
+	public static final String PASSWORD = "postgres";
 	public static final String DATABASE = "p1";
 	public static final String PORTNUMBER = "5432";
 	
