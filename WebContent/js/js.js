@@ -58,7 +58,7 @@ function doSearch()
 	{
 		if(req.readyState==4)
 		{
-			var re = req.responseText;//»ñÈ¡·µ»ØµÄÄÚÈÝ
+			var re = req.responseText;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			
 			$("results").innerHTML=re;
 		}
@@ -66,6 +66,36 @@ function doSearch()
 	req.send(null);	
 }
 
+function doSearch_p()
+{
+	$("results").innerHTML="";
+	$("results").innerHTML="Caculating...<br><img src='images/bar.gif'/>";	
+	 $("results").style.display="";//show results
+	var type=$("search_key").value;
+	var url="";
+	 var state=$("search_key_1").value;
+	 var category=$("search_key_2").value;
+	if(type==1)//customer
+	{
+          url = "do_Analysis_Customers_p.jsp?state="+state+"&&category="+category;
+	}
+	else//state
+	{
+		   url = "do_Analysis_States_p.jsp?state="+state+"&&category="+category;
+	}
+	var req = getAjax();
+	req.open("GET", url, true);
+	req.onreadystatechange = function()
+	{
+		if(req.readyState==4)
+		{
+			var re = req.responseText;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			
+			$("results").innerHTML=re;
+		}
+	};
+	req.send(null);	
+}
 
 function getAjax()
 {
