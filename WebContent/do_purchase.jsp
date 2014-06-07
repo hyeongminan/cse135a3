@@ -24,6 +24,66 @@ if(session.getAttribute("name")!=null)
 <p><table align="center" width="80%" style="border-bottom-width:2px; border-top-width:2px; border-bottom-style:solid; border-top-style:solid">
 	<tr><td align="left"><font size="+3">
 	<%
+	
+	class Sale 
+	{
+		private int uid=0;
+		private int pid=0;
+		private int cid=0;
+		private int quantity=0;
+		private float price=0f;
+		private String uname=null;
+		private String pname=null;
+		private String state=null;
+		public Sale(){
+		//default constructor
+		}
+		public Sale(int userid, int productid, int q, float p ) {
+			uid = userid;
+			pid = productid;
+			quantity = q;
+			price = p;
+		}
+		public int getUid(){
+			return uid;
+		}
+		public int getPid(){
+			return pid;
+		}
+		public int getCid(){
+			return cid;
+		}
+		public int getQuantity(){
+			return quantity;
+		}
+		public float getPrice(){
+			return price;
+		}
+		public String getUname(){
+			return uname;
+		}
+		public String getPname(){
+			return pname;
+		}
+		public String getState(){
+			return state;
+		}
+		public void setCid(int categoryId){
+			cid = categoryId;
+		}
+		public void setUname(String username){
+			uname = username;
+		}
+		public void setPname(String prodname){
+			pname = prodname;
+		}
+		public void setState(String statename){
+			state = statename;
+		}
+	}
+	
+	
+	
 	String uName=(String)session.getAttribute("name");
 	int userID  = (Integer)session.getAttribute("userID");
 	String role = (String)session.getAttribute("role");
@@ -52,6 +112,43 @@ if(session.getAttribute("name")!=null)
 			    	    	Util.USERNAME,
 			    	    	Util.PASSWORD);
 					stmt =conn.createStatement();
+					
+					ResultSet rs = stmt.executeQuery("select c.uid, c.pid, c.quantity, c.price from carts c where c.uid="+userID+";");
+					ArrayList<Sale> sales = new ArrayList<Sale>();
+					while(rs.next()){
+						Sale sale = new Sale(rs.getInt(1),rs.getInt(2),rs.getInt(3),rs.getFloat(4)); 
+						sales.add(sale);
+					}
+					
+					PreparedStatement update_p_category_customer_state = null;
+					PreparedStatement update_p_category_product = null;
+					PreparedStatement update_p_category_product_state = null;
+					PreparedStatement update_p_category_state = null;
+					PreparedStatement update_p_customer_product = null;
+					PreparedStatement update_p_customer_state = null;
+					
+					String update_1 = "update p_category_customer_state set agg = agg + ? where uid = ? and cid = ;";
+		
+					String update_2 = "";
+					String update_3 = "";
+					String update_4 = "";
+					String update_5 = "";
+					String update_6 = "";
+					
+					for(int i = 0; i < sales.size(); i++)
+					{
+						update_p_category_customer_state = conn.prepareStatement(update_1);
+						update_p_category_customer_state.executeUpdate();
+						
+						update_p_category_product = conn.prepareStatement(update_2);
+						update_p_category_product_state = conn.prepareStatement(update_3);
+						update_p_category_state = conn.prepareStatement(update_4);
+						update_p_customer_product = conn.prepareStatement(update_5);
+						update_p_customer_state = conn.prepareStatement(update_6);
+					}
+					
+					
+
 				
 					try{
 					
