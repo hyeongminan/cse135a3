@@ -31,18 +31,22 @@ if(session.getAttribute("name")!=null)
 		private int pid=0;
 		private int cid=0;
 		private int quantity=0;
-		private float price=0f;
+		private int price=0;
 		private String uname=null;
 		private String pname=null;
 		private String state=null;
 		public Sale(){
 		//default constructor
 		}
-		public Sale(int userid, int productid, int q, float p ) {
+		public Sale(int userid, int productid, int q, int p, int catid, String productname, String username, String userstate) {
 			uid = userid;
 			pid = productid;
 			quantity = q;
 			price = p;
+			cid = catid;
+			pname = productname;
+			uname = username;
+			state = userstate;
 		}
 		public int getUid(){
 			return uid;
@@ -56,7 +60,7 @@ if(session.getAttribute("name")!=null)
 		public int getQuantity(){
 			return quantity;
 		}
-		public float getPrice(){
+		public int getPrice(){
 			return price;
 		}
 		public String getUname(){
@@ -113,10 +117,13 @@ if(session.getAttribute("name")!=null)
 			    	    	Util.PASSWORD);
 					stmt =conn.createStatement();
 					
-					ResultSet rs = stmt.executeQuery("select c.uid, c.pid, c.quantity, c.price from carts c where c.uid="+userID+";");
+					ResultSet rs = stmt.executeQuery("select c.uid, c.pid, c.quantity, c.price, p.cid, p.name, u.name, u.state from carts c, products p, users u where c.uid="+userID+" and c.pid=p.id and c.uid=u.id;");
+					
 					ArrayList<Sale> sales = new ArrayList<Sale>();
+					
+					
 					while(rs.next()){
-						Sale sale = new Sale(rs.getInt(1),rs.getInt(2),rs.getInt(3),rs.getFloat(4)); 
+						Sale sale = new Sale(rs.getInt(1),rs.getInt(2),rs.getInt(3),rs.getInt(4),rs.getInt(5),rs.getString(6), rs.getString(7), rs.getString(8)); 
 						sales.add(sale);
 					}
 					
@@ -127,28 +134,126 @@ if(session.getAttribute("name")!=null)
 					PreparedStatement update_p_customer_product = null;
 					PreparedStatement update_p_customer_state = null;
 					
-					String update_1 = "update p_category_customer_state set agg = agg + ? where uid = ? and cid = ;";
-		
-					String update_2 = "";
-					String update_3 = "";
-					String update_4 = "";
-					String update_5 = "";
-					String update_6 = "";
+					PreparedStatement insert_p_category_customer_state = null;
+					PreparedStatement insert_p_category_product = null;
+					PreparedStatement insert_p_category_product_state = null;
+					PreparedStatement insert_p_category_state = null;
+					PreparedStatement insert_p_customer_product = null;
+					PreparedStatement insert_p_customer_state = null;
 					
+					String update_1 = "update p_category_customer_state set agg = agg + ? where uid = ? and cid = ?;";
+					String update_2 = "update p_category_product set agg = agg + ? where pid = ?;";
+					String update_3 = "update p_category_product_state set agg = agg + ? where uid = ? and cid = ?; and pid=?;";
+					String update_4 = "update p_category_state set agg = agg + ? where state = ? and cid = ?;";
+					String update_5 = "update p_customer_product set agg = agg + ? where uid = ? and pid = ?;";
+					String update_6 = "update p_customer_state set agg = agg + ? where uid = ?;";
+					
+					String insert_1 = "insert into p_category_customer_state (cid, uid, state, agg, uname) values (?, ?, ?, ?, ?);";
+					String insert_2 = "insert into p_category_product (cid, pid, agg, pname) values (?, ?, ?, ?);";
+					String insert_3 = "insert into p_category_product_state (cid, pid, state, agg, pname) values (?, ?, ?, ?, ?);";
+					String insert_4 = "insert into p_category_state (cid, state, agg) values (?, ?, ?);";
+					String insert_5 = "insert into p_customer_product (uid, pid, agg) values (?, ?, ?);";
+					String insert_6 = "insert into p_customer_state (uid, state, agg, uname) values (?, ?, ?, ?);";
+					
+					Sale entry;
+					int result_1, result_2, result_3, result_4, result_5, result_6;
 					for(int i = 0; i < sales.size(); i++)
 					{
+						entry = sales.get(i);
+						
 						update_p_category_customer_state = conn.prepareStatement(update_1);
-						update_p_category_customer_state.executeUpdate();
+						update_p_category_customer_state.setInt(1, entry.getQuantity() * entry.getPrice());
+						update_p_category_customer_state.setInt(2, entry.getUid());
+						update_p_category_customer_state.setInt(3, entry.getCid());
+						result_1 = update_p_category_customer_state.executeUpdate();
+						if(result_1 == 0)
+						{
+							insert_p_category_customer_state = conn.prepareStatement(insert_1);
+							insert_p_category_customer_state.setInt(1, entry.getCid());
+							insert_p_category_customer_state.setInt(2, entry.getUid());
+							insert_p_category_customer_state.setString(3, entry.getState());
+							insert_p_category_customer_state.setInt(4, entry.getQuantity() * entry.getPrice());
+							insert_p_category_customer_state.setString(5, entry.getUname());
+							result_1 = insert_p_category_customer_state.executeUpdate();
+						}
 						
 						update_p_category_product = conn.prepareStatement(update_2);
+						update_p_category_product.setInt(1, entry.getQuantity() * entry.getPrice());
+						update_p_category_product.setInt(2, entry.getPid());
+						result_2 = update_p_category_product.executeUpdate();
+						if(result_2 == 0)
+						{
+							insert_p_category_product = conn.prepareStatement(insert_2);
+							insert_p_category_product.setInt(1, entry.getCid());
+							insert_p_category_product.setInt(2, entry.getPid());
+							insert_p_category_product.setInt(3, entry.getQuantity() * entry.getPrice());
+							insert_p_category_product.setString(4, entry.getPname());
+							result_2 = insert_p_category_product.executeUpdate();
+						}
+						
 						update_p_category_product_state = conn.prepareStatement(update_3);
+						update_p_category_product_state.setInt(1, entry.getQuantity() * entry.getPrice());
+						update_p_category_product_state.setInt(2, entry.getUid());
+						update_p_category_product_state.setInt(3, entry.getPid());
+						update_p_category_product_state.setInt(4, entry.getCid());
+						result_3 = update_p_category_product_state.executeUpdate();
+						if(result_3 == 0)
+						{
+							insert_p_category_product_state = conn.prepareStatement(insert_3);
+							insert_p_category_product_state.setInt(1, entry.getCid());
+							insert_p_category_product_state.setInt(2, entry.getPid());
+							insert_p_category_product_state.setString(3, entry.getState());
+							insert_p_category_product_state.setInt(3, entry.getQuantity() * entry.getPrice());
+							insert_p_category_product_state.setString(4, entry.getPname());
+							result_3 = insert_p_category_product_state.executeUpdate();
+						}
+						
 						update_p_category_state = conn.prepareStatement(update_4);
+						update_p_category_state.setInt(1, entry.getQuantity() * entry.getPrice());
+						update_p_category_state.setString(2, entry.getState());
+						update_p_category_state.setInt(3, entry.getCid());
+						result_4 = update_p_category_state.executeUpdate();
+						if(result_4 == 0)
+						{
+							insert_p_category_state = conn.prepareStatement(insert_4);
+							insert_p_category_state.setInt(1, entry.getCid());
+							insert_p_category_state.setString(2, entry.getState());
+							insert_p_category_state.setInt(3, entry.getQuantity() * entry.getPrice());
+							result_4 = insert_p_category_state.executeUpdate();
+						}
+						
 						update_p_customer_product = conn.prepareStatement(update_5);
+						update_p_customer_product.setInt(1, entry.getQuantity() * entry.getPrice());
+						update_p_customer_product.setInt(2, entry.getUid());
+						update_p_customer_product.setInt(3, entry.getPid());
+						result_5 = update_p_customer_product.executeUpdate();
+						if(result_5 == 0)
+						{
+							insert_p_customer_product = conn.prepareStatement(insert_5);
+							insert_p_customer_product.setInt(1, entry.getUid());
+							insert_p_customer_product.setInt(2, entry.getPid());
+							insert_p_customer_product.setInt(3, entry.getQuantity() * entry.getPrice());
+							result_5 = insert_p_customer_product.executeUpdate();
+						}
+						
 						update_p_customer_state = conn.prepareStatement(update_6);
+						update_p_customer_state.setInt(1, entry.getQuantity() * entry.getPrice());
+						update_p_customer_state.setInt(2, entry.getUid());
+						result_6 = update_p_customer_state.executeUpdate();
+						if(result_6 == 0)
+						{
+							insert_p_customer_state = conn.prepareStatement(insert_6);
+							insert_p_customer_state.setInt(1, entry.getUid());
+							insert_p_customer_state.setString(2, entry.getState());
+							insert_p_customer_state.setInt(3, entry.getQuantity() * entry.getPrice());
+							insert_p_customer_state.setString(4, entry.getUname());
+							result_6 = insert_p_customer_state.executeUpdate();
+						}
+						
+						conn.commit();
+						
 					}
 					
-					
-
 				
 					try{
 					
