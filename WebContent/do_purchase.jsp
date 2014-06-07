@@ -143,7 +143,7 @@ if(session.getAttribute("name")!=null)
 					
 					String update_1 = "update p_category_customer_state set agg = agg + ? where uid = ? and cid = ?;";
 					String update_2 = "update p_category_product set agg = agg + ? where pid = ?;";
-					String update_3 = "update p_category_product_state set agg = agg + ? where cid = ? and pid=?;";
+					String update_3 = "update p_category_product_state set agg = agg + ? where cid = ? and pid=? and state=?;";
 					String update_4 = "update p_category_state set agg = agg + ? where state = ? and cid = ?;";
 					String update_5 = "update p_customer_product set agg = agg + ? where uid = ? and pid = ?;";
 					String update_6 = "update p_customer_state set agg = agg + ? where uid = ?;";
@@ -198,6 +198,7 @@ if(session.getAttribute("name")!=null)
 						update_p_category_product_state.setInt(1, entry.getQuantity() * entry.getPrice());
 						update_p_category_product_state.setInt(2, entry.getCid());
 						update_p_category_product_state.setInt(3, entry.getPid());
+						update_p_category_product_state.setString(4, entry.getState());
 						result_3 = update_p_category_product_state.executeUpdate();
 						if(result_3 == 0)
 						{
