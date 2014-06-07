@@ -118,6 +118,14 @@ try
 	rs=stmt.executeQuery(SQL_3);
 	
 	
+	HashMap<String, Integer> cell_amount = new HashMap<String, Integer>();
+	
+	while(rs.next ())
+	{
+		cell_amount.put("("+rs.getString(1) +","+ rs.getInt(2)+")", rs.getInt(3));
+	}
+	
+	
 %>	
 
 	<table align="center" width="100%" border="1">
@@ -189,19 +197,17 @@ try
  
 	<table align="center" width="100%" border="1">
 <%	
-	boolean empty_flag = !rs.next();
 	for(int i=0;i<u_list.size();i++)
 	{
 		out.println("<tr  align='center'>");
 		for(int j=0;j<p_list.size();j++)
 		{
-				if(!empty_flag && rs.getInt(1) == u_list.get(i) && rs.getInt(2) == p_list.get(j))
-				{
-					out.println("<td width=\"10%\"><font color='#0000ff'><b>"+rs.getInt(3)+"</b></font></td>");
-					empty_flag = !rs.next();
-				}
-				else
-					out.println("<td width=\"10%\"><font color='#ff0000'>0</font></td>");
+			if(cell_amount.get("(" +u_list.get(i) +","+ p_list.get(j)+")") != null)
+			{
+				out.println("<td width=\"10%\"><font color='#0000ff'><b>"+cell_amount.get("(" +u_list.get(i) +","+ p_list.get(j)+")")+"</b></font></td>");
+			}
+			else
+				out.println("<td width=\"10%\"><font color='#ff0000'>0</font></td>");
 		}
 		out.println("</tr>");
 	}
