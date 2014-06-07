@@ -58,7 +58,7 @@ public class FirstPrecomputationProgram {
 					+ "select c.id as cid, u.id as uid, u.state, sum(s.price * s.quantity) as total, u.name "
 					+ "from users u, sales s, products p, categories c "
 					+ "where u.id = s.uid and s.pid = p.id and p.cid = c.id "
-					+ "group by u.id, c.id;;";
+					+ "group by u.id, c.id;";
 			stmt.execute(SQL);
 			
 			SQL = "insert into p_customer_state "
