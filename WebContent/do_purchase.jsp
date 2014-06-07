@@ -143,7 +143,7 @@ if(session.getAttribute("name")!=null)
 					
 					String update_1 = "update p_category_customer_state set agg = agg + ? where uid = ? and cid = ?;";
 					String update_2 = "update p_category_product set agg = agg + ? where pid = ?;";
-					String update_3 = "update p_category_product_state set agg = agg + ? where uid = ? and cid = ?; and pid=?;";
+					String update_3 = "update p_category_product_state set agg = agg + ? where cid = ? and pid=?;";
 					String update_4 = "update p_category_state set agg = agg + ? where state = ? and cid = ?;";
 					String update_5 = "update p_customer_product set agg = agg + ? where uid = ? and pid = ?;";
 					String update_6 = "update p_customer_state set agg = agg + ? where uid = ?;";
@@ -176,6 +176,7 @@ if(session.getAttribute("name")!=null)
 							insert_p_category_customer_state.setString(5, entry.getUname());
 							result_1 = insert_p_category_customer_state.executeUpdate();
 						}
+						conn.commit();
 						
 						update_p_category_product = conn.prepareStatement(update_2);
 						update_p_category_product.setInt(1, entry.getQuantity() * entry.getPrice());
@@ -190,12 +191,13 @@ if(session.getAttribute("name")!=null)
 							insert_p_category_product.setString(4, entry.getPname());
 							result_2 = insert_p_category_product.executeUpdate();
 						}
+						conn.commit();
+						
 						
 						update_p_category_product_state = conn.prepareStatement(update_3);
 						update_p_category_product_state.setInt(1, entry.getQuantity() * entry.getPrice());
-						update_p_category_product_state.setInt(2, entry.getUid());
+						update_p_category_product_state.setInt(2, entry.getCid());
 						update_p_category_product_state.setInt(3, entry.getPid());
-						update_p_category_product_state.setInt(4, entry.getCid());
 						result_3 = update_p_category_product_state.executeUpdate();
 						if(result_3 == 0)
 						{
@@ -203,10 +205,13 @@ if(session.getAttribute("name")!=null)
 							insert_p_category_product_state.setInt(1, entry.getCid());
 							insert_p_category_product_state.setInt(2, entry.getPid());
 							insert_p_category_product_state.setString(3, entry.getState());
-							insert_p_category_product_state.setInt(3, entry.getQuantity() * entry.getPrice());
-							insert_p_category_product_state.setString(4, entry.getPname());
+							insert_p_category_product_state.setInt(4, entry.getQuantity() * entry.getPrice());
+							insert_p_category_product_state.setString(5, entry.getPname());
 							result_3 = insert_p_category_product_state.executeUpdate();
 						}
+						
+						conn.commit();
+						
 						
 						update_p_category_state = conn.prepareStatement(update_4);
 						update_p_category_state.setInt(1, entry.getQuantity() * entry.getPrice());
@@ -221,6 +226,8 @@ if(session.getAttribute("name")!=null)
 							insert_p_category_state.setInt(3, entry.getQuantity() * entry.getPrice());
 							result_4 = insert_p_category_state.executeUpdate();
 						}
+						conn.commit();
+						
 						
 						update_p_customer_product = conn.prepareStatement(update_5);
 						update_p_customer_product.setInt(1, entry.getQuantity() * entry.getPrice());
@@ -235,6 +242,8 @@ if(session.getAttribute("name")!=null)
 							insert_p_customer_product.setInt(3, entry.getQuantity() * entry.getPrice());
 							result_5 = insert_p_customer_product.executeUpdate();
 						}
+						conn.commit();
+						
 						
 						update_p_customer_state = conn.prepareStatement(update_6);
 						update_p_customer_state.setInt(1, entry.getQuantity() * entry.getPrice());
@@ -251,6 +260,7 @@ if(session.getAttribute("name")!=null)
 						}
 						
 						conn.commit();
+						
 						
 					}
 					
