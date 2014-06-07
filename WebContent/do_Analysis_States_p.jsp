@@ -80,6 +80,7 @@ try
 	SQL_pt="insert into p_t (id) "+SQL_pt;
 	
 	//customer name
+	long starttime = System.nanoTime();
 	rs=stmt.executeQuery(SQL_1);
 	while(rs.next())
 	{
@@ -220,7 +221,9 @@ try
 <%
 	conn.commit();
 	conn.setAutoCommit(true);
+	long endtime = System.nanoTime();
 	conn.close();
+	System.out.println("Overall time to load the page in seconds: "+((endtime - starttime)/1000000000.0) + "\n");
 }
 catch(Exception e)
 {
