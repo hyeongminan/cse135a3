@@ -31,7 +31,7 @@
 Connection	conn=null;
 Statement 	stmt,stmt2;
 ResultSet 	rs=null;
-String  	SQL_1=null,SQL_2=null,SQL_ut=null, SQL_pt=null, SQL_3=null;
+String  	SQL_1=null,SQL_2=null,SQL_ut=null, SQL_pt=null, SQL_3=null, SQL_1_NOT=null, SQL_2_NOT=null;
 String  	SQL_amount_row=null,SQL_amount_col=null,SQL_amount_cell=null;
 int 		p_id=0,u_id=0;
 String		p_name=null,s_name=null;

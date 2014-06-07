@@ -31,8 +31,8 @@
 <%
 Connection	conn=null;
 Statement 	stmt,stmt2;
-ResultSet 	rs=null;
-String  	SQL_1=null,SQL_2=null,SQL_ut=null, SQL_pt=null, SQL_3=null;
+ResultSet 	rs=null, rs_not=null;
+String  	SQL_1=null,SQL_2=null,SQL_ut=null, SQL_pt=null, SQL_3=null, SQL_1_NOT=null, SQL_2_NOT=null;
 String  	SQL_amount_row=null,SQL_amount_col=null,SQL_amount_cell=null;
 int 		p_id=0,u_id=0;
 String		p_name=null,u_name=null;
@@ -58,6 +58,8 @@ try
 		SQL_2 = "select pid, agg, pname from p_category_product order by agg desc limit 10;";
 		SQL_ut = "select uid from p_customer_state order by agg desc limit 20;";
 		SQL_pt = "select pid from p_category_product order by agg desc limit 10;";
+		SQL_1_NOT = "select uid, agg, uname from p_customer_state where (uid, agg, uname) NOT IN ("+SQL_1.replace(";","")+") limit 20;";
+		SQL_2_NOT = "select pid, agg, pname from p_category_product where (pid, agg, pname) NOT IN ("+SQL_2.replace(";","")+") limit 10;";
 	}	
 	if(("All").equals(state) && !("0").equals(category))//0,1
 	{
@@ -65,6 +67,8 @@ try
 		SQL_2 = "select pid, agg, pname from p_category_product where cid = "+ category +" order by agg desc limit 10;";
 		SQL_ut = "select uid from p_category_customer_state where cid = "+ category +" order by agg desc limit 20;";
 		SQL_pt = "select pid from p_category_product where cid = "+ category +" order by agg desc limit 10;";
+		SQL_1_NOT = "select uid, agg, uname from p_category_customer_state where (uid, agg, uname) NOT IN ("+SQL_1.replace(";","")+") limit20;";
+		SQL_2_NOT = "select pid, agg, pname from p_category_product where (pid, agg, pname) NOT IN("+SQL_2.replace(";","")+") limit 10;";
 	}
 	if(!("All").equals(state) && ("0").equals(category))//1,0
 	{
@@ -72,6 +76,8 @@ try
 		SQL_2 = "select pid, agg, pname from p_category_product_state where state = '"+ state +"' order by agg desc limit 10;";
 		SQL_ut = "select uid from p_customer_state where state = '"+ state +"' order by agg desc limit 20;";
 		SQL_pt = "select pid from p_category_product_state where state = '"+ state +"' order by agg desc limit 10;";
+		SQL_1_NOT = "select uid, agg, uname from p_customer_state where (uid, agg, uname) NOT IN ("+SQL_1.replace(";","")+") limit 20;";
+		SQL_2_NOT = "select pid, agg, pname from p_category_product_state where (pid, agg, pname) NOT IN ("+SQL_2.replace(";","")+") limit 10;";
 	}
 	if(!("All").equals(state) && !("0").equals(category))//1,1
 	{
@@ -79,6 +85,8 @@ try
 		SQL_2 = "select pid, agg, pname from p_category_product_state where state = '"+ state +"' and cid = "+ category +" order by agg desc limit 10;";
 		SQL_ut = "select uid from p_category_customer_state where state = '"+ state +"' and cid = "+ category +" order by agg desc limit 20;";
 		SQL_pt = "select pid from p_category_product_state where state = '"+ state +"' and cid = "+ category +" order by agg desc limit 10;";
+		SQL_1_NOT = "select uid, agg, uname from p_category_customer_state where (uid, agg, uname) NOT IN ("+SQL_1.replace(";","")+") limit 20;";
+		SQL_2_NOT = "select pid, agg, pname from p_category_product_state where (pid, agg, pname) NOT IN ("+SQL_2.replace(";","")+") limit 10;";
 	}
 	
 	SQL_ut="insert into u_t (id) "+SQL_ut;
@@ -93,6 +101,23 @@ try
 		u_name_list.add(rs.getString(3));
 		  
 	}
+	
+	if(u_list.size() < 20)
+	{
+		rs_not=stmt.executeQuery(SQL_1_NOT);
+		while(rs_not.next())
+		{
+			if(u_list.size() < 20)
+			{
+				u_list.add(rs_not.getInt(1));
+				customer_ID_amount.put(rs_not.getInt(1), rs_not.getInt(2));
+				u_name_list.add(rs_not.getString(3));
+			}
+			else
+				break;
+		}
+	
+	}
 
 	//product name
 	rs=stmt.executeQuery(SQL_2);
@@ -103,6 +128,23 @@ try
 		p_name_list.add(rs.getString(3));
 		  
 	}
+	
+	if(p_list.size() < 10)
+	{
+		rs_not=stmt.executeQuery(SQL_2_NOT);
+		while(rs_not.next())
+		{
+			if(p_list.size() < 10)
+			{
+				p_list.add(rs_not.getInt(1));
+				product_ID_amount.put(rs_not.getInt(1), rs_not.getInt(2));
+				p_name_list.add(rs_not.getString(3));
+			}
+			else
+				break;
+		}
+	}
+	
 	
 	
 	//cells
